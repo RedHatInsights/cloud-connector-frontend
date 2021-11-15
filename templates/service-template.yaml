@@ -1,0 +1,135 @@
+---
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  name: cloud-connector
+  annotations:
+    openshift.io/display-name: Web-RCA frontend Service
+    description: Cloud connector frontend (static assets)
+    tags: httpd,static content,service-delivery,cloud-connector,cloud-connector-frontend
+    iconClass: icon-shadowman
+    template.openshift.io/provider-display-name: Red Hat, Inc.
+    template.openshift.io/documentation-url: https://github.com/RedHatInsights/cloud-connector-frontend
+labels:
+  template: cloud-connector-frontend
+parameters:
+  - name: MEMORY_REQUEST
+    description: Memory request for the API pods.
+    value: "512Mi"
+
+  - name: MEMORY_LIMIT
+    description: Memory limit for the API pods.
+    value: "1Gi"
+
+  - name: CPU_REQUEST
+    description: CPU request for the API pods.
+    value: "200m"
+
+  - name: CPU_LIMIT
+    description: CPU limit for the API pods.
+    value: "1"
+
+  - name: REPLICAS
+    description: Number of replicas of the service to run.
+    value: "1"
+
+  - name: OCM_BASE_URL
+    description: Base URL for OCM
+    value: "https://api.stage.openshift.com"
+
+  - name: IMAGE_REGISTRY
+    displayName: Image Registry
+    required: true
+
+  - name: IMAGE_REPOSITORY
+    displayName: Image Repository
+    required: true
+
+  - name: IMAGE_TAG
+    displayName: Image tag
+    value: latest
+
+  - name: PULL_SECRET_NAME
+    displayName: Name of the pull secret for accessing the image
+    value: "quay.io"
+
+objects:
+  - kind: Deployment
+    apiVersion: apps/v1
+    metadata:
+      name: cloud-connector-frontend
+      labels:
+        app: cloud-connector-frontend
+    spec:
+      selector:
+        matchLabels:
+          app: cloud-connector-frontend
+      replicas: ${{REPLICAS}}
+      strategy:
+        rollingUpdate:
+          maxSurge: 1
+          maxUnavailable: 0
+        type: RollingUpdate
+      template:
+        metadata:
+          labels:
+            app: cloud-connector-frontend
+        spec:
+          imagePullSecrets:
+            - name: ${PULL_SECRET_NAME}
+          containers:
+            - name: service
+              image: ${IMAGE_REGISTRY}/${IMAGE_REPOSITORY}:${IMAGE_TAG}
+              imagePullPolicy: IfNotPresent
+              env:
+                - name: OCM_BASE_URL
+                  value: ${OCM_BASE_URL}
+                - name: CONNECTOR_API
+                  value: ""
+              command:
+                - /usr/libexec/s2i/run
+              resources:
+                requests:
+                  cpu: ${CPU_REQUEST}
+                  memory: ${MEMORY_REQUEST}
+                limits:
+                  cpu: ${CPU_LIMIT}
+                  memory: ${MEMORY_LIMIT}
+              ports:
+                - name: api
+                  protocol: TCP
+                  containerPort: 8080
+              livenessProbe:
+                httpGet:
+                  path: /
+                  port: 8080
+                  scheme: HTTP
+                initialDelaySeconds: 15
+                periodSeconds: 5
+              readinessProbe:
+                httpGet:
+                  path: /
+                  port: 8080
+                  scheme: HTTP
+                  httpHeaders:
+                    - name: User-Agent
+                      value: Probe
+                initialDelaySeconds: 20
+                periodSeconds: 10
+  - kind: Service
+    apiVersion: v1
+    metadata:
+      name: cloud-connector-frontend
+      labels:
+        app: cloud-connector-frontend
+        port: api
+      annotations:
+        description: Exposes and load balances the cloud-connector-frontend pods
+    spec:
+      selector:
+        app: cloud-connector-frontend
+      ports:
+        - name: api
+          port: 8080
+          targetPort: 8080
+          protocol: TCP
