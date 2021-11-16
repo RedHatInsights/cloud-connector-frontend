@@ -67,8 +67,5 @@ module.exports = {
       },
     ],
   },
-  plugins: [
-    new HtmlWebpackPlugin({ template: './src/index.html' }),
-    new EnvironmentPlugin({ CONNECTOR_API: null }),
-  ],
+  plugins: [new HtmlWebpackPlugin({ template: './src/index.html' }), new EnvironmentPlugin({ CONNECTOR_API: null })],
 };
