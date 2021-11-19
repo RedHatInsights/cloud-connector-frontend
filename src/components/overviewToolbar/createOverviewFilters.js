@@ -6,7 +6,7 @@ const createOverviewFilters = (onChangeText, textValues, intl) => ({
       filterValues: {
         placeholder: intl.formatMessage({
           id: 'overview.table.account_number.placeholder',
-          defaultMessage: 'Filter by account number',
+          defaultMessage: 'Find by account number',
         }),
         value: textValues.account_number,
         onChange: (_e, value) => onChangeText('account_number', value),

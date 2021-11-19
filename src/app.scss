@@ -16,3 +16,19 @@
         width: 100%;
     }
 }
+
+.connections-toolbar {
+    .pf-c-toolbar__content {
+        padding: 0;
+    }
+}
+
+.cloud-connector-overview-toolbar {
+    .pf-c-dropdown__toggle-text {
+        width: initial !important;
+    }
+
+    input.ins-c-conditional-filter {
+        width: 230px;
+    }
+}

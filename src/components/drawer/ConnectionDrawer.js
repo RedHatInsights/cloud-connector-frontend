@@ -14,8 +14,6 @@ import {
   DrawerHead,
   DrawerPanelBody,
   DrawerPanelContent,
-  List,
-  ListItem,
   Title,
   Button,
   Spinner,
@@ -32,14 +30,19 @@ import {
   DescriptionListDescription,
   DrawerActions,
   DrawerCloseButton,
+  List,
+  ListItem,
 } from '@patternfly/react-core';
 
 import useConnectionsStore, {
+  getAccountConnections,
+  getFilters,
   getLoading,
   getMetaData,
   getSelected,
   refreshList,
   selectConnection,
+  setFilters,
   setPage,
   setPerPage,
 } from '../../store/connectionsStore';
@@ -130,6 +133,7 @@ const ConnectionDropdown = () => {
 
 const PanelContent = ({ expand }) => {
   const selected = useConnectionsStore(getSelected, shallow);
+  const filters = useConnectionsStore(getFilters, shallow);
 
   const [data, setData] = useState();
   const [error, setError] = useState();
@@ -158,7 +162,9 @@ const PanelContent = ({ expand }) => {
             <DrawerCloseButton onClick={console.log()} />
           </DrawerActions>
         </DrawerHead>
-        <DrawerPanelBody className="pf-u-text-align-center pf-u-color-200">Select a connection to see details</DrawerPanelBody>
+        <DrawerPanelBody className="pf-u-text-align-center pf-u-color-200">
+          {!filters.account_number ? 'Select an account to see a list of connections' : 'Select a connection to see details'}
+        </DrawerPanelBody>
       </DrawerPanelContent>
     );
   }
@@ -208,7 +214,9 @@ PanelContent.propTypes = {
 
 const ConnectionDrawer = () => {
   const { total, page, perPage } = useConnectionsStore(getMetaData, shallow);
+  const filters = useConnectionsStore(getFilters, shallow);
   const connections = useConnectionsStore(getConnections, shallow);
+  const account_connections = useConnectionsStore(getAccountConnections, shallow);
   const isLoading = useConnectionsStore(getLoading);
   const [isExpanded, expand] = useState(false);
 
@@ -239,14 +247,14 @@ const ConnectionDrawer = () => {
     <Drawer isStatic isExpanded={isExpanded}>
       <DrawerContent panelContent={<PanelContent expand={expand} />}>
         <DrawerContentBody>
-          <OverviewToolbar paginationConfig={paginationConfig} />
-          {isLoading && (
+          <OverviewToolbar {...(!filters.account_number && { paginationConfig })} />
+          {isLoading && !filters.account_number && (
             <div className="pf-u-text-align-center pf-u-mt-lg pf-u-mb-md">
               <Spinner size="xl" />
             </div>
           )}
-          {!isLoading && total === 0 && <EmptyResultComponent />}
-          {!isLoading && total > 0 && (
+          {!isLoading && !filters.account_number && total === 0 && <EmptyResultComponent />}
+          {!isLoading && !filters.account_number && total > 0 && (
             <DataList>
               {connections.map((con) => (
                 <DataListItem key={con.account}>
@@ -263,15 +271,12 @@ const ConnectionDrawer = () => {
                           <div className="pf-u-color-200 pf-u-font-size-xs">
                             {intl.formatMessage({ id: 'connection.connections', defaultMessage: 'connections' })}
                           </div>
-                          <List variant="inline">
-                            {con.connections.map((node) => (
-                              <ListItem key={node}>
-                                <Button variant="link" isInline onClick={() => selectConnection(con.account, node)}>
-                                  {node}
-                                </Button>
-                              </ListItem>
-                            ))}
-                          </List>
+                          <Button variant="link" isInline onClick={() => setFilters('account_number', String(con.account))}>
+                            {intl.formatMessage(
+                              { id: 'connection.connections.total', defaultMessage: '{length} connections' },
+                              { length: con.connections_count }
+                            )}
+                          </Button>
                         </DataListCell>,
                       ]}
                     />
@@ -280,7 +285,51 @@ const ConnectionDrawer = () => {
               ))}
             </DataList>
           )}
-          <PrimaryToolbar className="cloud-connector-bottom-toolbar" pagination={paginationConfigBottom} />
+          {filters.account_number && (
+            <DataList>
+              <DataListItem key={filters.account_number}>
+                <DataListItemRow>
+                  <DataListItemCells
+                    dataListCells={[
+                      <DataListCell key="cell">
+                        <PrimaryToolbar className="pf-u-p-0 connections-toolbar" pagination={paginationConfig}>
+                          <div className="pf-u-mb-xs">
+                            <div className="pf-u-color-200 pf-u-font-size-xs">
+                              {intl.formatMessage({ id: 'connection.account', defaultMessage: 'account' })}
+                            </div>
+                            {filters.account_number}
+                          </div>
+                        </PrimaryToolbar>
+                        <div className="pf-u-color-200 pf-u-font-size-xs">
+                          {intl.formatMessage({ id: 'connection.connections', defaultMessage: 'connections' })}
+                        </div>
+                        <List isPlain isBordered>
+                          {!isLoading &&
+                            account_connections.map((node) => (
+                              <ListItem key={node}>
+                                <Button
+                                  variant="link"
+                                  isInline
+                                  onClick={() => selectConnection(filters.account_number.account, node)}
+                                >
+                                  {node}
+                                </Button>
+                              </ListItem>
+                            ))}
+                          {isLoading && (
+                            <div className="pf-u-text-align-center pf-u-mt-lg pf-u-mb-md">
+                              <Spinner size="xl" />
+                            </div>
+                          )}
+                        </List>
+                      </DataListCell>,
+                    ]}
+                  />
+                </DataListItemRow>
+              </DataListItem>
+            </DataList>
+          )}
+          {!isLoading && <PrimaryToolbar className="cloud-connector-bottom-toolbar" pagination={paginationConfigBottom} />}
         </DrawerContentBody>
       </DrawerContent>
     </Drawer>

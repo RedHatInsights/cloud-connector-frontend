@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import { addNotification } from '../store/notificationStore';
+import generateAccount from '../test/__mocks__/account';
 import generateConnections from '../test/__mocks__/connections';
 import generateStatus from '../test/__mocks__/status';
 
@@ -38,9 +39,11 @@ if (!process.env.CONNECTOR_API) {
 
     await sleep(1500);
 
-    const data = generateConnections();
+    const data = generateConnections(0, 10);
 
-    switch (url.replace(/\/\d+\//g, '/id/')) {
+    switch (url.replace(/\/\d+/g, '/id/')) {
+      case `${process.env.CONNECTOR_API}/api/cloud-connector/v1/connection/id/`:
+        return generateAccount();
       default:
         return {
           meta: { count: data.length },

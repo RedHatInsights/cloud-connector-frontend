@@ -12,6 +12,7 @@ const initialState = {
   perPage: 10,
   total: 0,
   connections: undefined,
+  account_connections: undefined,
   loaded: 0,
   error: undefined,
   filters: defaultFilters,
@@ -34,7 +35,7 @@ const useConnectionsStore = create((set, get) => ({
     get().refreshList();
   },
   setFilters: (name, value) => {
-    set({ filters: { ...get().filters, [name]: value } });
+    set({ filters: { ...get().filters, [name]: value }, page: 1 });
     get().refreshList();
   },
   resetFilters: () => {
@@ -47,18 +48,31 @@ const useConnectionsStore = create((set, get) => ({
         loaded: get().loaded + 1,
       });
 
-      const { page, perPage } = get();
+      const { page, perPage, filters } = get();
 
-      const result = await api.getListConnection({
-        offset: page,
-        limit: perPage,
-      });
-
-      set({
-        loaded: get().loaded - 1,
-        connections: result.data,
-        total: result.meta.count,
-      });
+      let result;
+      if (filters.account_number) {
+        result = await api.getListByAccountConnection({
+          offset: page,
+          limit: perPage,
+          account: filters.account_number,
+        });
+        set({
+          loaded: get().loaded - 1,
+          account_connections: result.data,
+          total: result.meta.count,
+        });
+      } else {
+        result = await api.getListConnection({
+          offset: page,
+          limit: perPage,
+        });
+        set({
+          loaded: get().loaded - 1,
+          connections: result.data,
+          total: result.meta.count,
+        });
+      }
     } catch (error) {
       set({
         loaded: get().loaded - 1,
@@ -75,6 +89,7 @@ const useConnectionsStore = create((set, get) => ({
 
 export const getFilters = (store) => store.filters;
 export const getConnections = (store) => store.connections;
+export const getAccountConnections = (store) => store.account_connections;
 export const getMetaData = ({ sortBy, sortDirection, total, page, perPage, error }) => ({
   sortBy,
   sortDirection,
