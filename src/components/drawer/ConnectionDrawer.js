@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import shallow from 'zustand/shallow';
-import PropTypes from 'prop-types';
 
 import {
   DataList,
@@ -11,25 +10,8 @@ import {
   Drawer,
   DrawerContent,
   DrawerContentBody,
-  DrawerHead,
-  DrawerPanelBody,
-  DrawerPanelContent,
-  Title,
   Button,
   Spinner,
-  Dropdown,
-  DropdownToggle,
-  DropdownToggleAction,
-  DropdownItem,
-  FlexItem,
-  Flex,
-  DescriptionList,
-  Label,
-  DescriptionListGroup,
-  DescriptionListTerm,
-  DescriptionListDescription,
-  DrawerActions,
-  DrawerCloseButton,
   List,
   ListItem,
 } from '@patternfly/react-core';
@@ -39,10 +21,9 @@ import useConnectionsStore, {
   getFilters,
   getLoading,
   getMetaData,
-  getSelected,
   refreshList,
-  selectConnection,
-  setFilters,
+  setClient,
+  setAccount,
   setPage,
   setPerPage,
 } from '../../store/connectionsStore';
@@ -51,166 +32,8 @@ import OverviewToolbar from '../overviewToolbar/OverviewToolbar';
 import PrimaryToolbar from '@redhat-cloud-services/frontend-components/PrimaryToolbar/PrimaryToolbar';
 import { EmptyResultComponent } from '../../shared/EmptyRowsComposable';
 import useEnhancedIntl from '../../shared/useEnhancedIntl';
-import overviewActionResolver from '../../pages/overview/overviewActionResolver';
-import api from '../../api';
-
-const ConnectionDetails = ({ status, dispatchers }) => {
-  console.log(status, dispatchers);
-
-  return (
-    <React.Fragment>
-      <div className="pf-u-color-200 pf-u-font-size-xs pf-u-mb-xs">status</div>
-      <Label>{status}</Label>
-      <div className="pf-u-color-200 pf-u-font-size-xs pf-u-mb-xs pf-u-mt-md">dispatchers</div>
-      {Object.keys(dispatchers).map((key) => {
-        const value = dispatchers[key];
-        const keys = Object.keys(value);
-
-        return (
-          <React.Fragment key={key}>
-            <Title headingLevel="h3" size="md" className="pf-u-mt-md pf-u-mb-sm">
-              {key}
-            </Title>
-            <DescriptionList
-              columnModifier={{
-                default: '2Col',
-              }}
-            >
-              {!keys.length && <div className="pf-u-color-200">Not available</div>}
-              {keys.map((key) => (
-                <DescriptionListGroup key={key}>
-                  <DescriptionListTerm>{key}</DescriptionListTerm>
-                  <DescriptionListDescription>{value[key]}</DescriptionListDescription>
-                </DescriptionListGroup>
-              ))}
-            </DescriptionList>
-          </React.Fragment>
-        );
-      })}
-    </React.Fragment>
-  );
-};
-
-ConnectionDetails.propTypes = {
-  status: PropTypes.oneOf(['connected', 'disconnected']),
-  dispatchers: PropTypes.object,
-};
-
-const ConnectionDropdown = () => {
-  const selected = useConnectionsStore(getSelected, shallow);
-  const [isOpen, open] = useState(false);
-  const intl = useEnhancedIntl();
-
-  return (
-    <Dropdown
-      onSelect={() => {
-        open(false);
-      }}
-      position="right"
-      toggle={
-        <DropdownToggle
-          splitButtonItems={[
-            <DropdownToggleAction key="action" onClick={() => open(!isOpen)}>
-              {intl.formatMessage({
-                id: 'connection.header.actions',
-                defaultMessage: 'Actions',
-              })}
-            </DropdownToggleAction>,
-          ]}
-          splitButtonVariant="action"
-          onToggle={() => open(!isOpen)}
-        />
-      }
-      isOpen={isOpen}
-      dropdownItems={overviewActionResolver(intl)({ selected }).map((item) => (
-        <DropdownItem key={item.title} onClick={item.onClick}>
-          {item.title}
-        </DropdownItem>
-      ))}
-    />
-  );
-};
-
-const PanelContent = ({ expand }) => {
-  const selected = useConnectionsStore(getSelected, shallow);
-  const filters = useConnectionsStore(getFilters, shallow);
-
-  const [data, setData] = useState();
-  const [error, setError] = useState();
-
-  useEffect(() => {
-    if (selected) {
-      expand(true);
-
-      if (document.body.clientWidth > 767) {
-        const element = document.getElementById('connection-header');
-        element.scrollIntoView?.({ behavior: 'smooth', block: 'end', inline: 'nearest' });
-      }
-
-      setData(undefined);
-      setError(undefined);
-
-      api.statusConnection({ account: selected.account, node_id: selected.node }).then(setData).catch(setError);
-    }
-  }, [`${selected?.account}-${selected?.node}`]);
-
-  if (!selected) {
-    return (
-      <DrawerPanelContent minSize="200px">
-        <DrawerHead>
-          <DrawerActions>
-            <DrawerCloseButton onClick={console.log()} />
-          </DrawerActions>
-        </DrawerHead>
-        <DrawerPanelBody className="pf-u-text-align-center pf-u-color-200">
-          {!filters.account_number ? 'Select an account to see a list of connections' : 'Select a connection to see details'}
-        </DrawerPanelBody>
-      </DrawerPanelContent>
-    );
-  }
-
-  return (
-    <DrawerPanelContent minSize="550px">
-      <DrawerHead>
-        <Flex>
-          <FlexItem className="pf-u-mr-lg">
-            <div className="pf-u-color-200 pf-u-font-size-xs">connection</div>
-            <Title headingLevel="h2" size="xl" id="connection-header">
-              {selected.node}
-            </Title>
-          </FlexItem>
-          <FlexItem>
-            <div className="pf-u-color-200 pf-u-font-size-xs">account</div>
-            <div>{selected.account}</div>
-          </FlexItem>
-          <FlexItem align={{ default: 'alignRight' }} className="pf-u-my-auto">
-            <ConnectionDropdown />
-          </FlexItem>
-        </Flex>
-        <DrawerActions>
-          <DrawerCloseButton onClick={() => expand(false)} />
-        </DrawerActions>
-      </DrawerHead>
-      <DrawerPanelBody>
-        {!data && !error && (
-          <div className="pf-u-text-align-center pf-u-mt-lg pf-u-mb-md">
-            <Spinner size="xl" />
-          </div>
-        )}
-        {error && (
-          <div className="pf-u-text-align-center pf-u-color-200">
-            Unable to receive data. Check your connection and try again.
-          </div>
-        )}
-        {data && <ConnectionDetails {...data} />}
-      </DrawerPanelBody>
-    </DrawerPanelContent>
-  );
-};
-
-PanelContent.propTypes = {
-  expand: PropTypes.func,
-};
+import Connection from '../connection/Connection';
+import ClientInput from '../clientInput/ClientInput';
 
 const ConnectionDrawer = () => {
   const { total, page, perPage } = useConnectionsStore(getMetaData, shallow);
@@ -240,12 +63,12 @@ const ConnectionDrawer = () => {
   };
 
   useEffect(() => {
-    !connections && refreshList();
+    refreshList(Object.fromEntries(new URLSearchParams(window.location.search).entries()));
   }, []);
 
   return (
     <Drawer isStatic isExpanded={isExpanded}>
-      <DrawerContent panelContent={<PanelContent expand={expand} />}>
+      <DrawerContent panelContent={<Connection expand={expand} account={filters.account_number} />}>
         <DrawerContentBody>
           <OverviewToolbar {...(!filters.account_number && { paginationConfig })} />
           {isLoading && !filters.account_number && (
@@ -271,7 +94,7 @@ const ConnectionDrawer = () => {
                           <div className="pf-u-color-200 pf-u-font-size-xs">
                             {intl.formatMessage({ id: 'connection.connections', defaultMessage: 'connections' })}
                           </div>
-                          <Button variant="link" isInline onClick={() => setFilters('account_number', String(con.account))}>
+                          <Button variant="link" isInline onClick={() => setAccount(String(con.account))}>
                             {intl.formatMessage(
                               { id: 'connection.connections.total', defaultMessage: '{length} connections' },
                               { length: con.connections_count }
@@ -292,12 +115,9 @@ const ConnectionDrawer = () => {
                   <DataListItemCells
                     dataListCells={[
                       <DataListCell key="cell">
-                        <PrimaryToolbar className="pf-u-p-0 connections-toolbar" pagination={paginationConfig}>
+                        <PrimaryToolbar className="pf-u-p-0 connections-toolbar pf-u-mb-md" pagination={paginationConfig}>
                           <div className="pf-u-mb-xs">
-                            <div className="pf-u-color-200 pf-u-font-size-xs">
-                              {intl.formatMessage({ id: 'connection.account', defaultMessage: 'account' })}
-                            </div>
-                            {filters.account_number}
+                            <ClientInput className="cloud-connector-inpage-client-input" />
                           </div>
                         </PrimaryToolbar>
                         <div className="pf-u-color-200 pf-u-font-size-xs">
@@ -305,13 +125,9 @@ const ConnectionDrawer = () => {
                         </div>
                         <List isPlain isBordered>
                           {!isLoading &&
-                            account_connections.map((node) => (
+                            account_connections?.map((node) => (
                               <ListItem key={node}>
-                                <Button
-                                  variant="link"
-                                  isInline
-                                  onClick={() => selectConnection(filters.account_number.account, node)}
-                                >
+                                <Button variant="link" isInline onClick={() => setClient(node)}>
                                   {node}
                                 </Button>
                               </ListItem>

@@ -30,7 +30,7 @@ const Header = ({ isNavOpen, onNavToggle }) => {
           href="/"
           onClick={(e) => {
             e.preventDefault();
-            push(routes.overview.path);
+            push(routes.accounts.path);
           }}
         >
           <React.Fragment>

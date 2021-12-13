@@ -7,7 +7,7 @@ import Header from './Header';
 import Sidebar from './Sidebar';
 
 const Page = ({ children }) => {
-  const [isNavOpen, setOpen] = useState(false);
+  const [isNavOpen, setOpen] = useState(true);
 
   return (
     <PFPage

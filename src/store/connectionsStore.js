@@ -1,6 +1,7 @@
 import create from 'zustand';
 
 import api from '../api';
+import updateQuery from '../shared/updateQuery';
 
 const defaultFilters = {
   account_number: '',
@@ -16,7 +17,6 @@ const initialState = {
   loaded: 0,
   error: undefined,
   filters: defaultFilters,
-  selectedConnection: undefined,
 };
 
 const useConnectionsStore = create((set, get) => ({
@@ -34,21 +34,34 @@ const useConnectionsStore = create((set, get) => ({
     set({ sortBy, sortDirection });
     get().refreshList();
   },
-  setFilters: (name, value) => {
-    set({ filters: { ...get().filters, [name]: value }, page: 1 });
+  setAccount: (value) => {
+    set({ filters: { ...get().filters, account_number: value }, page: 1 });
     get().refreshList();
+    updateQuery(get().filters.account_number, get().filters.client_id);
+  },
+  setClient: (value) => {
+    set({ filters: { ...get().filters, client_id: value } });
+    updateQuery(get().filters.account_number, get().filters.client_id);
   },
   resetFilters: () => {
     set({ filters: defaultFilters });
     get().refreshList();
   },
-  refreshList: async () => {
+  refreshList: async (paramFilters) => {
     try {
       set({
         loaded: get().loaded + 1,
+        ...(paramFilters && {
+          filters: {
+            ...get().filters,
+            ...paramFilters,
+          },
+        }),
       });
 
       const { page, perPage, filters } = get();
+
+      console.log('filters', filters.account_number);
 
       let result;
       if (filters.account_number) {
@@ -80,11 +93,6 @@ const useConnectionsStore = create((set, get) => ({
       });
     }
   },
-  selectConnection: (account, node) => {
-    set({
-      selectedConnection: { account, node },
-    });
-  },
 }));
 
 export const getFilters = (store) => store.filters;
@@ -99,14 +107,13 @@ export const getMetaData = ({ sortBy, sortDirection, total, page, perPage, error
   error,
 });
 export const getLoading = (store) => !store.connections || Boolean(store.loaded);
-export const getSelected = (store) => store.selectedConnection;
 
 export const setPerPage = useConnectionsStore.getState().setPerPage;
 export const setPage = useConnectionsStore.getState().setPage;
 export const refreshList = useConnectionsStore.getState().refreshList;
-export const setFilters = useConnectionsStore.getState().setFilters;
 export const resetFilters = useConnectionsStore.getState().resetFilters;
-export const selectConnection = useConnectionsStore.getState().selectConnection;
+export const setAccount = useConnectionsStore.getState().setAccount;
+export const setClient = useConnectionsStore.getState().setClient;
 
 export const resetOverviewState = (customInitialState) =>
   useConnectionsStore.setState({ ...initialState, ...customInitialState });

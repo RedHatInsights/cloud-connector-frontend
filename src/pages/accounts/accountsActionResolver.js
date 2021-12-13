@@ -1,4 +1,4 @@
-const overviewActionResolver =
+const accountsActionResolver =
   (intl) =>
   // eslint-disable-next-line no-unused-vars
   ({ connection }) =>
@@ -33,4 +33,4 @@ const overviewActionResolver =
       },
     ];
 
-export default overviewActionResolver;
+export default accountsActionResolver;

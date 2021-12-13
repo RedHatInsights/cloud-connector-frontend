@@ -3,79 +3,49 @@ import PropTypes from 'prop-types';
 import shallow from 'zustand/shallow';
 import awesomeDebouncePromise from 'awesome-debounce-promise';
 
+import { SearchInput } from '@patternfly/react-core';
 import { PrimaryToolbar } from '@redhat-cloud-services/frontend-components/PrimaryToolbar';
 
-import useConnectionsStore, { getFilters, resetFilters, setFilters } from '../../store/connectionsStore';
+import useConnectionsStore, { getFilters, setAccount } from '../../store/connectionsStore';
 import useEnhancedIntl from '../../shared/useEnhancedIntl';
-import createOverviewFilters from './createOverviewFilters';
-//import generateOverviewChips from './generateOverviewChips';
-import { Button } from '@patternfly/react-core';
 
-const debouncedSetFilters = awesomeDebouncePromise(setFilters, 500);
+const debouncedSetFilters = awesomeDebouncePromise(setAccount, 500);
 
 const OverviewToolbar = ({ paginationConfig }) => {
   const intl = useEnhancedIntl();
 
   const filters = useConnectionsStore(getFilters, shallow);
 
-  const [textFilters, setTextFilters] = useState({
-    account_number: filters.account_number,
-    client_id: filters.client_id,
-  });
+  const [account_number, setAccountNumber] = useState(filters.account_number);
 
-  const updateTextFilter = (name, value) => {
-    setTextFilters((prevState) => ({ ...prevState, [name]: value }));
-    debouncedSetFilters(name, value);
+  const updateTextFilter = (value, debounced = true) => {
+    setAccountNumber(value);
+    debounced ? debouncedSetFilters(value) : setAccount(value);
   };
 
   useEffect(() => {
-    if (filters.account_number !== textFilters.account_number) {
-      setTextFilters((prevState) => ({ ...prevState, account_number: filters.account_number }));
+    if (filters.account_number !== account_number) {
+      setAccountNumber(filters.account_number);
     }
   }, [filters.account_number]);
 
   return (
-    <PrimaryToolbar
-      className="cloud-connector-overview-toolbar"
-      useMobileLayout
-      pagination={paginationConfig}
-      filterConfig={createOverviewFilters(updateTextFilter, textFilters, intl)}
-      // activeFiltersConfig={{
-      //   filters: generateOverviewChips({ ...filters, ...textFilters }, intl),
-      //   onDelete: (_e, [chipGroup], deleteAll) => {
-      //     if (deleteAll) {
-      //       resetFilters();
-      //       setTextFilters({ name: '' });
-      //     } else {
-      //       if (chipGroup.clear) {
-      //         // text filters
-      //         setTextFilters(chipGroup.value, '');
-      //         setFilters(chipGroup.value, '');
-      //       } else {
-      //         // remove one value from an array
-      //         const valueToRemove = chipGroup.chips[0].value;
-
-      //         setFilters(
-      //           chipGroup.value,
-      //           filters[chipGroup.value].filter((val) => (val.value || val) !== valueToRemove)
-      //         );
-      //       }
-      //     }
-      //   },
-      // }}
-    >
-      {filters.account_number && (
-        <Button
-          variant="link"
-          isInline
-          onClick={() => {
-            resetFilters();
-            setTextFilters({ account_number: '', client_id: '' });
-          }}
-        >
-          Clear selection
-        </Button>
-      )}
+    <PrimaryToolbar className="cloud-connector-overview-toolbar" useMobileLayout pagination={paginationConfig}>
+      <div>
+        <div className="pf-u-color-200 pf-u-font-size-xs">
+          {intl.formatMessage({ id: 'connection.account', defaultMessage: 'account' })}
+        </div>
+        <SearchInput
+          placeholder={intl.formatMessage({
+            id: 'overview.table.account_number.placeholder',
+            defaultMessage: 'Find by account number',
+          })}
+          value={account_number}
+          onChange={updateTextFilter}
+          onClear={() => updateTextFilter('', false)}
+          className="cloud-connector-search-input"
+        />
+      </div>
     </PrimaryToolbar>
   );
 };

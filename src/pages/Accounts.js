@@ -9,7 +9,7 @@ import useEnhancedIntl from '../shared/useEnhancedIntl';
 import ErrorState from '../shared/ErrorState';
 import ConnectionDrawer from '../components/drawer/ConnectionDrawer';
 
-const Overview = () => {
+const Accounts = () => {
   const intl = useEnhancedIntl();
 
   const { error } = useConnectionsStore(getMetaData, shallow);
@@ -19,8 +19,8 @@ const Overview = () => {
       <PageHeader>
         <PageHeaderTitle
           title={intl.formatMessage({
-            id: 'overview.title',
-            defaultMessage: 'Connections',
+            id: 'accounts.title',
+            defaultMessage: 'Accounts',
           })}
         />
       </PageHeader>
@@ -34,4 +34,4 @@ const Overview = () => {
   );
 };
 
-export default Overview;
+export default Accounts;

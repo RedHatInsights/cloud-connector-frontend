@@ -6,6 +6,10 @@
     min-width: 100px;
 }
 
+.cloud-connector-search-input {
+    min-width: 240px;
+}
+
 .cloud-connector-logo-text {
     color: white;
 }
@@ -30,5 +34,21 @@
 
     input.ins-c-conditional-filter {
         width: 230px;
+    }
+
+    .pf-c-toolbar__content-section {
+        align-items: flex-end;
+    }
+}
+
+.cloud-connector-inpage-client-input {
+    max-width: 150px;
+
+    .pf-c-search-input__icon {
+        display: none;
+    }
+
+    .pf-c-search-input__text-input {
+        padding-left: 8px;
     }
 }

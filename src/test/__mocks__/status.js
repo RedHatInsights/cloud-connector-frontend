@@ -1,6 +1,7 @@
 import getRandomInt from './getRandomInt';
 
 export const generateStatus = () => ({
+  account: '232376',
   status: ['connected', 'disconnected'][getRandomInt(1, 2)],
   dispatchers: {
     catalog: {
