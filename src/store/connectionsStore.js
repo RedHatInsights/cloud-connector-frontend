@@ -61,8 +61,6 @@ const useConnectionsStore = create((set, get) => ({
 
       const { page, perPage, filters } = get();
 
-      console.log('filters', filters.account_number);
-
       let result;
       if (filters.account_number) {
         result = await api.getListByAccountConnection({

@@ -10,6 +10,14 @@ import ClientInput from '../clientInput/ClientInput';
 const ConnectionsList = () => {
   const filters = useConnectionsStore(getFilters, shallow);
 
+  useEffect(() => {
+    const clientId = Object.fromEntries(new URLSearchParams(window.location.search).entries()).client_id;
+
+    if (clientId) {
+      setClient(clientId);
+    }
+  }, []);
+
   return (
     <Card isPlain className="pf-u-background-color-100">
       <CardBody className="pf-u-p-0">
@@ -23,7 +31,7 @@ const ConnectionsList = () => {
           <Drawer isStatic isExpanded>
             <DrawerContent
               panelContent={<Connection expand={(isOpen) => !isOpen && setClient('')} hasNoBorder minSize="100%" />}
-            ></DrawerContent>
+            />
           </Drawer>
         )}
       </CardBody>
