@@ -7,7 +7,15 @@
 }
 
 .cloud-connector-search-input {
-    min-width: 240px;
+    width: 120px;
+
+    .pf-c-search-input__icon {
+        display: none;
+    }
+
+    .pf-c-search-input__text-input {
+        padding-left: 8px;
+    }
 }
 
 .cloud-connector-logo-text {

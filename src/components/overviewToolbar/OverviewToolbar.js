@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import shallow from 'zustand/shallow';
 import awesomeDebouncePromise from 'awesome-debounce-promise';
 
-import { SearchInput } from '@patternfly/react-core';
+import { InputGroup, InputGroupText, SearchInput, TextInput } from '@patternfly/react-core';
 import { PrimaryToolbar } from '@redhat-cloud-services/frontend-components/PrimaryToolbar';
 
 import useConnectionsStore, { getFilters, setAccount } from '../../store/connectionsStore';
@@ -32,19 +32,22 @@ const OverviewToolbar = ({ paginationConfig }) => {
   return (
     <PrimaryToolbar className="cloud-connector-overview-toolbar" useMobileLayout pagination={paginationConfig}>
       <div>
-        <div className="pf-u-color-200 pf-u-font-size-xs">
-          {intl.formatMessage({ id: 'connection.account', defaultMessage: 'account' })}
-        </div>
-        <SearchInput
-          placeholder={intl.formatMessage({
-            id: 'overview.table.account_number.placeholder',
-            defaultMessage: 'Find by account number',
-          })}
-          value={account_number}
-          onChange={updateTextFilter}
-          onClear={() => updateTextFilter('', false)}
-          className="cloud-connector-search-input"
-        />
+        <InputGroup>
+          <InputGroupText variant="plain">
+            {intl.formatMessage({ id: 'connection.account', defaultMessage: 'Account:' })}
+          </InputGroupText>
+          <SearchInput
+            aria-label={intl.formatMessage({
+              id: 'overview.table.account_number.placeholder',
+              defaultMessage: 'Find by account number',
+            })}
+            placeholder="i.e. 9253845"
+            value={account_number}
+            onChange={updateTextFilter}
+            onClear={() => updateTextFilter('', false)}
+            className="cloud-connector-search-input"
+          />
+        </InputGroup>
       </div>
     </PrimaryToolbar>
   );
