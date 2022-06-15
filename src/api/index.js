@@ -7,6 +7,11 @@ const connectionsApi = {
       params,
     }),
   status: (params) => instance.post(`${process.env.CONNECTOR_API}/api/cloud-connector/v1/connection/status`, params),
+  // PLACEHOLDERS >
+  ping: (id) => instance.post(`${process.env.CONNECTOR_API}/api/cloud-connector/v1/connection/${id}/ping`),
+  reconnect: (id) => instance.post(`${process.env.CONNECTOR_API}/api/cloud-connector/v1/connection/${id}/reconnect`),
+  disconnect: (id) => instance.post(`${process.env.CONNECTOR_API}/api/cloud-connector/v1/connection/${id}/disconnect`),
+  resetState: (id) => instance.post(`${process.env.CONNECTOR_API}/api/cloud-connector/v1/connection/${id}/resetState`),
 };
 
 const nameApiFunctions = (object, key) =>

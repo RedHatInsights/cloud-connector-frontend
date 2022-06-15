@@ -113,7 +113,7 @@ export const resetFilters = useConnectionsStore.getState().resetFilters;
 export const setAccount = useConnectionsStore.getState().setAccount;
 export const setClient = useConnectionsStore.getState().setClient;
 
-export const resetOverviewState = (customInitialState) =>
+export const resetConnectionStore = (customInitialState) =>
   useConnectionsStore.setState({ ...initialState, ...customInitialState });
 
 export default useConnectionsStore;

@@ -1,35 +1,37 @@
+import api from '../../api';
+
 const accountsActionResolver =
   (intl) =>
   // eslint-disable-next-line no-unused-vars
-  ({ connection }) =>
+  ({ id }) =>
     [
       {
         title: intl.formatMessage({
           id: 'overview.actions.ping',
           defaultMessage: 'Ping',
         }),
-        onClick: console.log,
+        onClick: () => api.pingConnection(id),
       },
       {
         title: intl.formatMessage({
           id: 'overview.actions.reconnect',
           defaultMessage: 'Reconnect',
         }),
-        onClick: console.log,
+        onClick: () => api.reconnectConnection(id),
       },
       {
         title: intl.formatMessage({
           id: 'overview.actions.disconnect',
           defaultMessage: 'Disconnect',
         }),
-        onClick: console.log,
+        onClick: () => api.disconnectConnection(id),
       },
       {
         title: intl.formatMessage({
           id: 'overview.actions.reset',
           defaultMessage: 'Reset state',
         }),
-        onClick: console.log,
+        onClick: () => api.resetStateConnection(id),
       },
     ];
 

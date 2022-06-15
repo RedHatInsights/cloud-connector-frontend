@@ -5,13 +5,11 @@
     },
     "globals": {
         "setImmediate": true,
-        "toJson": true,
         "beforeAll": true,
         "describe": true,
         "expect": true,
         "it": true,
-        "mount": true,
-        "shallow": true
+        "mockApi": true
     },
     "rules": {
         "react/prop-types": "off",
