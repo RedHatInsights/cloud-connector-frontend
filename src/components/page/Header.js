@@ -10,7 +10,7 @@ import {
   PageToggleButton,
   Brand,
 } from '@patternfly/react-core';
-import BarsIcon from '@patternfly/react-icons/dist/esm/icons/bars-icon';
+import BarsIcon from '@patternfly/react-icons/dist/js/icons/bars-icon';
 
 import '../../assets/logo.svg';
 import { routes } from '../../Routes';

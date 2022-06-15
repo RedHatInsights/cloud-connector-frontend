@@ -137,6 +137,7 @@ const ConnectionDrawer = () => {
                               <Spinner size="xl" />
                             </div>
                           )}
+                          {!isLoading && total === 0 && <EmptyResultComponent />}
                         </List>
                       </DataListCell>,
                     ]}

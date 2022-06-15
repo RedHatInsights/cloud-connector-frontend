@@ -64,7 +64,7 @@ const useConnectionsStore = create((set, get) => ({
       let result;
       if (filters.account_number) {
         result = await api.getListByAccountConnection({
-          offset: page,
+          offset: (page - 1) * perPage,
           limit: perPage,
           account: filters.account_number,
         });
@@ -75,7 +75,7 @@ const useConnectionsStore = create((set, get) => ({
         });
       } else {
         result = await api.getListConnection({
-          offset: page,
+          offset: (page - 1) * perPage,
           limit: perPage,
         });
         set({
