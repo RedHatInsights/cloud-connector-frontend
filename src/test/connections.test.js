@@ -146,6 +146,38 @@ describe('<Connections />', () => {
   });
 
   describe('connection dropdown', () => {
+    it('toogles', async () => {
+      api.statusConnection = mockApi();
+
+      const user = userEvent.setup();
+
+      resetConnectionStore();
+
+      render(
+        <TestWrapper>
+          <Connections />
+        </TestWrapper>
+      );
+
+      await user.type(screen.getByPlaceholderText('Find by client id'), '123');
+
+      await waitFor(() => expect(screen.getByRole('progressbar')).toBeInTheDocument(), { timeout: '501' });
+
+      const status = generateStatus();
+
+      api.statusConnection.resolve(status);
+
+      await waitFor(() => expect(() => screen.getByRole('progressbar')).toThrow());
+
+      await user.click(screen.getByText('Actions'));
+
+      expect(screen.getByText('Ping')).toBeInTheDocument();
+
+      await user.click(screen.getByText('Actions'));
+
+      expect(() => screen.getByText('Ping')).toThrow();
+    });
+
     it('pings', async () => {
       api.statusConnection = mockApi();
 
