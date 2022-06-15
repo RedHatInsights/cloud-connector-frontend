@@ -1,5 +1,5 @@
 # Build static files
-FROM registry.access.redhat.com/ubi8/nodejs-14 as builder
+FROM registry.access.redhat.com/ubi8/nodejs-16 as builder
 
 USER root
 
