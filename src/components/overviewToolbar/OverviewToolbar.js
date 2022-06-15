@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import shallow from 'zustand/shallow';
 import awesomeDebouncePromise from 'awesome-debounce-promise';
 
-import { InputGroup, InputGroupText, SearchInput, TextInput } from '@patternfly/react-core';
+import { InputGroup, InputGroupText, SearchInput } from '@patternfly/react-core';
 import { PrimaryToolbar } from '@redhat-cloud-services/frontend-components/PrimaryToolbar';
 
 import useConnectionsStore, { getFilters, setAccount } from '../../store/connectionsStore';
