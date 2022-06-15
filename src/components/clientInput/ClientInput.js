@@ -36,7 +36,7 @@ const ClientInput = (props) => {
       value={client_id}
       onChange={updateTextFilter}
       onClear={() => updateTextFilter('')}
-      className="pf-u-mx-lg pf-u-mt-lg"
+      className="pf-u-mx-lg pf-u-mt-lg cloud-connector-connection-search"
       {...props}
     />
   );

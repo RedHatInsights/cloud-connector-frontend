@@ -60,3 +60,7 @@
         padding-left: 8px;
     }
 }
+
+.cloud-connector-connection-search {
+    max-width: calc(100% - 2 * var(--pf-global--spacer--lg));
+}
