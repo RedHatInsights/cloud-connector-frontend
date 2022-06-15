@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import shallow from 'zustand/shallow';
 
 import { Card, CardBody, Drawer, DrawerContent, Text, TextContent } from '@patternfly/react-core';

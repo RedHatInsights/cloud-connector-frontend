@@ -104,7 +104,7 @@ export const getMetaData = ({ sortBy, sortDirection, total, page, perPage, error
   perPage,
   error,
 });
-export const getLoading = (store) => !store.connections || Boolean(store.loaded);
+export const getLoading = (store) => (!store.connections && !store.account_connections) || Boolean(store.loaded);
 
 export const setPerPage = useConnectionsStore.getState().setPerPage;
 export const setPage = useConnectionsStore.getState().setPage;
