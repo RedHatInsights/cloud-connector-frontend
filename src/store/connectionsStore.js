@@ -30,10 +30,6 @@ const useConnectionsStore = create((set, get) => ({
     set({ page });
     get().refreshList();
   },
-  setSort: (sortBy, sortDirection) => {
-    set({ sortBy, sortDirection });
-    get().refreshList();
-  },
   setAccount: (value) => {
     set({ filters: { ...get().filters, account_number: value }, page: 1 });
     get().refreshList();

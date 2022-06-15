@@ -45,8 +45,10 @@ describe('<Accounts />', () => {
     expect(screen.getByText(connections[0].connections_count + ' connections')).toBeInTheDocument();
   });
 
-  it('renders error', async () => {
-    resetConnectionStore({ error: 'Some API failed' });
+  it('renders error real', async () => {
+    api.getListConnection = mockApi();
+
+    resetConnectionStore();
 
     render(
       <TestWrapper>
@@ -54,6 +56,14 @@ describe('<Accounts />', () => {
       </TestWrapper>
     );
 
+    expect(screen.getByText('Accounts')).toBeInTheDocument();
+    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+
+    await waitFor(() => expect(screen.getByRole('progressbar')).toBeInTheDocument());
+
+    api.getListConnection.reject('SOME API ERROR');
+
+    await waitFor(() => expect(() => screen.getByRole('progressbar')).toThrow());
     expect(screen.getByText('Accounts')).toBeInTheDocument();
     expect(screen.getByText('Something went wrong')).toBeInTheDocument();
     expect(screen.getByText('There was a problem processing the request. Please try again.')).toBeInTheDocument();
