@@ -1,8 +1,5 @@
 import React from 'react';
 import shallow from 'zustand/shallow';
-import PropTypes from 'prop-types';
-
-import { Td, Tr } from '@patternfly/react-table';
 
 import useEnhancedIntl from './useEnhancedIntl';
 import useConnectionsStore, { getFilters, resetFilters } from '../store/connectionsStore';
@@ -28,17 +25,4 @@ export const EmptyResultComponent = () => {
   );
 };
 
-const EmptyRowsComposable = ({ Component = EmptyResultComponent, columns }) => (
-  <Tr>
-    <Td colSpan={columns?.length}>
-      <Component />
-    </Td>
-  </Tr>
-);
-
-EmptyRowsComposable.propTypes = {
-  Component: PropTypes.elementType,
-  columns: PropTypes.array,
-};
-
-export default EmptyRowsComposable;
+export default EmptyResultComponent;

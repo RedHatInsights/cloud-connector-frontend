@@ -30,7 +30,7 @@ import useConnectionsStore, {
 import { getConnections } from '../../store/connectionsStore';
 import OverviewToolbar from '../overviewToolbar/OverviewToolbar';
 import PrimaryToolbar from '@redhat-cloud-services/frontend-components/PrimaryToolbar/PrimaryToolbar';
-import { EmptyResultComponent } from '../../shared/EmptyRowsComposable';
+import EmptyResultComponent from '../../shared/EmptyResultComponent';
 import useEnhancedIntl from '../../shared/useEnhancedIntl';
 import Connection from '../connection/Connection';
 import ClientInput from '../clientInput/ClientInput';

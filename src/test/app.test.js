@@ -35,11 +35,56 @@ describe('<App />', () => {
     await waitFor(() => expect(() => screen.getByRole('progressbar')).toThrow());
 
     expect(screen.getByText('Accounts page')).toBeInTheDocument();
+    expect(window.location.pathname).toBe('/accounts');
 
     await userEvent.click(screen.getByText('Connections'));
 
     expect(api.getListConnection).toHaveBeenCalled();
 
     expect(screen.getByText('Connections page')).toBeInTheDocument();
+    expect(window.location.pathname).toBe('/connections');
+
+    await userEvent.click(screen.getByText('Accounts'));
+
+    expect(screen.getByText('Accounts page')).toBeInTheDocument();
+    expect(window.location.pathname).toBe('/accounts');
+  });
+
+  it('open and close nav', async () => {
+    api.getListConnection = jest.fn();
+
+    resetConnectionStore();
+
+    render(<App />);
+
+    await waitFor(() => expect(() => screen.getByRole('progressbar')).toThrow());
+
+    expect(screen.getByText('Accounts').closest('#page-sidebar')).toHaveAttribute('aria-hidden', 'false');
+
+    await userEvent.click(screen.getByLabelText('Global navigation'));
+
+    expect(screen.getByText('Accounts').closest('#page-sidebar')).toHaveAttribute('aria-hidden', 'true');
+
+    await userEvent.click(screen.getByLabelText('Global navigation'));
+
+    expect(screen.getByText('Accounts').closest('#page-sidebar')).toHaveAttribute('aria-hidden', 'false');
+  });
+
+  it('goes back via logo', async () => {
+    api.getListConnection = jest.fn();
+
+    resetConnectionStore();
+
+    render(<App />);
+
+    await waitFor(() => expect(() => screen.getByRole('progressbar')).toThrow());
+
+    await userEvent.click(screen.getByText('Connections'));
+
+    expect(window.location.pathname).toBe('/connections');
+
+    await userEvent.click(screen.getByAltText('Red Hat logo'));
+
+    expect(window.location.pathname).toBe('/accounts');
   });
 });

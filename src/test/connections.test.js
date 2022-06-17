@@ -146,6 +146,35 @@ describe('<Connections />', () => {
     expect(screen.getByPlaceholderText('Find by client id')).toHaveValue('');
   });
 
+  it('goes to the account', async () => {
+    api.statusConnection = mockApi();
+    updateQuery.default = jest.fn();
+
+    const user = userEvent.setup();
+
+    resetConnectionStore();
+
+    render(
+      <TestWrapper>
+        <Connections />
+      </TestWrapper>
+    );
+
+    await user.type(screen.getByPlaceholderText('Find by client id'), '123');
+
+    await waitFor(() => expect(screen.getByRole('progressbar')).toBeInTheDocument(), { timeout: '501' });
+
+    const status = generateStatus();
+
+    api.statusConnection.resolve(status);
+
+    await waitFor(() => expect(() => screen.getByRole('progressbar')).toThrow());
+
+    await user.click(screen.getByText(status.account));
+
+    expect(screen.getByTestId('currentPathname')).toHaveTextContent(`/accounts`);
+  });
+
   describe('connection dropdown', () => {
     it('toogles', async () => {
       api.statusConnection = mockApi();
@@ -174,7 +203,7 @@ describe('<Connections />', () => {
 
       expect(screen.getByText('Ping')).toBeInTheDocument();
 
-      await user.click(screen.getByText('Actions'));
+      await user.click(screen.getByLabelText('Select'));
 
       expect(() => screen.getByText('Ping')).toThrow();
     });

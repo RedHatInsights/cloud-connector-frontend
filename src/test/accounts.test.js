@@ -70,6 +70,44 @@ describe('<Accounts />', () => {
     expect(screen.getByText('There was a problem processing the request. Please try again.')).toBeInTheDocument();
   });
 
+  it('opens an account from the list', async () => {
+    const user = userEvent.setup();
+
+    updateQuery.default = jest.fn();
+
+    const connections = generateConnections(1, 10);
+
+    const data = {
+      meta: { count: connections.length },
+      data: connections,
+    };
+
+    api.getListConnection = jest.fn().mockResolvedValue(data);
+
+    const account = generateAccount();
+
+    api.getListByAccountConnection = jest.fn().mockResolvedValue(account);
+
+    resetConnectionStore();
+    resetNotificationStore();
+
+    render(
+      <TestWrapper>
+        <Accounts />
+      </TestWrapper>
+    );
+
+    await waitFor(() => expect(() => screen.getByRole('progressbar')).toThrow());
+
+    await user.click(screen.getByText(`${connections[0].connections_count} connections`));
+
+    expect(api.getListByAccountConnection).toHaveBeenCalledWith({
+      account: String(connections[0].account),
+      limit: 10,
+      offset: 0,
+    });
+  });
+
   it('search by account', async () => {
     const user = userEvent.setup();
 
@@ -140,6 +178,13 @@ describe('<Accounts />', () => {
     expect(useNotificationStore.getState().notifications).toEqual([
       { id: '0', title: `Ping request for ${account.data[0]} was sent`, variant: 'info' },
     ]);
+
+    api.getListConnection = jest.fn().mockResolvedValue(data);
+
+    await user.click(screen.getAllByLabelText('Reset')[0]);
+
+    expect(api.getListConnection).toHaveBeenCalledWith({ limit: 10, offset: 0 });
+    expect(screen.getByLabelText('Find by account number')).toHaveValue('');
   });
 
   it('renders empty state', async () => {
