@@ -34,7 +34,9 @@ export const removeNotification = useNotificationStore.getState().removeNotifica
 export const addNotification = useNotificationStore.getState().addNotification;
 export const clearAllNotifications = useNotificationStore.getState().clearAllNotifications;
 
-export const resetNotificationStore = (customInitialState) =>
-  useNotificationStore.setState({ ...initialState, ...customInitialState });
+export const resetNotificationStore = (customInitialState) => {
+  id = 0;
+  return useNotificationStore.setState({ ...initialState, ...customInitialState });
+};
 
 export default useNotificationStore;

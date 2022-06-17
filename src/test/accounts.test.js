@@ -9,6 +9,7 @@ import generateConnections from './__mocks__/connections';
 import generateAccount from './__mocks__/account';
 import generateStatus from './__mocks__/status';
 import * as updateQuery from '../shared/updateQuery';
+import useNotificationStore, { resetNotificationStore } from '../store/notificationStore';
 
 describe('<Accounts />', () => {
   it('renders and loads data correctly', async () => {
@@ -76,6 +77,7 @@ describe('<Accounts />', () => {
     api.getListConnection = mockApi();
 
     resetConnectionStore();
+    resetNotificationStore();
 
     render(
       <TestWrapper>
@@ -135,6 +137,9 @@ describe('<Accounts />', () => {
     await user.click(screen.getByText('Ping'));
 
     expect(api.pingConnection).toHaveBeenCalledWith(account.data[0]);
+    expect(useNotificationStore.getState().notifications).toEqual([
+      { id: '0', title: `Ping request for ${account.data[0]} was sent`, variant: 'info' },
+    ]);
   });
 
   it('renders empty state', async () => {

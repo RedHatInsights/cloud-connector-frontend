@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import api from '../api';
 
 import App from '../App';
 
@@ -21,6 +22,8 @@ jest.mock('../pages/Connections', () => ({
 
 describe('<App />', () => {
   it('renders correctly', async () => {
+    api.getListConnection = jest.fn();
+
     resetConnectionStore();
 
     render(<App />);
@@ -34,6 +37,8 @@ describe('<App />', () => {
     expect(screen.getByText('Accounts page')).toBeInTheDocument();
 
     await userEvent.click(screen.getByText('Connections'));
+
+    expect(api.getListConnection).toHaveBeenCalled();
 
     expect(screen.getByText('Connections page')).toBeInTheDocument();
   });

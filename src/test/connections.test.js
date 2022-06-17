@@ -6,6 +6,7 @@ import Connections from '../pages/Connections';
 import * as updateQuery from '../shared/updateQuery';
 
 import { resetConnectionStore } from '../store/connectionsStore';
+import useNotificationStore, { resetNotificationStore } from '../store/notificationStore';
 import TestWrapper from './TestWrapper';
 import generateStatus from './__mocks__/status';
 
@@ -184,6 +185,7 @@ describe('<Connections />', () => {
       const user = userEvent.setup();
 
       resetConnectionStore();
+      resetNotificationStore();
 
       render(
         <TestWrapper>
@@ -208,6 +210,9 @@ describe('<Connections />', () => {
       await user.click(screen.getByText('Ping'));
 
       expect(api.pingConnection).toHaveBeenCalledWith('123');
+      expect(useNotificationStore.getState().notifications).toEqual([
+        { id: '0', title: `Ping request for 123 was sent`, variant: 'info' },
+      ]);
     });
 
     it('reconnects', async () => {
@@ -216,6 +221,7 @@ describe('<Connections />', () => {
       const user = userEvent.setup();
 
       resetConnectionStore();
+      resetNotificationStore();
 
       render(
         <TestWrapper>
@@ -240,6 +246,9 @@ describe('<Connections />', () => {
       await user.click(screen.getByText('Reconnect'));
 
       expect(api.reconnectConnection).toHaveBeenCalledWith('123');
+      expect(useNotificationStore.getState().notifications).toEqual([
+        { id: '0', title: `Reconnect request for 123 was sent`, variant: 'info' },
+      ]);
     });
 
     it('disconnects', async () => {
@@ -248,6 +257,7 @@ describe('<Connections />', () => {
       const user = userEvent.setup();
 
       resetConnectionStore();
+      resetNotificationStore();
 
       render(
         <TestWrapper>
@@ -272,6 +282,9 @@ describe('<Connections />', () => {
       await user.click(screen.getByText('Disconnect'));
 
       expect(api.disconnectConnection).toHaveBeenCalledWith('123');
+      expect(useNotificationStore.getState().notifications).toEqual([
+        { id: '0', title: `Disconnect request for 123 was sent`, variant: 'info' },
+      ]);
     });
 
     it('resets state', async () => {
@@ -280,6 +293,7 @@ describe('<Connections />', () => {
       const user = userEvent.setup();
 
       resetConnectionStore();
+      resetNotificationStore();
 
       render(
         <TestWrapper>
@@ -304,6 +318,9 @@ describe('<Connections />', () => {
       await user.click(screen.getByText('Reset state'));
 
       expect(api.resetStateConnection).toHaveBeenCalledWith('123');
+      expect(useNotificationStore.getState().notifications).toEqual([
+        { id: '0', title: `Reset state request for 123 was sent`, variant: 'info' },
+      ]);
     });
   });
 });
