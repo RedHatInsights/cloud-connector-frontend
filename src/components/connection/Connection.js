@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import shallow from 'zustand/shallow';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
@@ -33,7 +33,7 @@ const Connection = ({ expand, ...props }) => {
     if (filters.client_id) {
       expand(true);
 
-      if (document.body.clientWidth > 767) {
+      if (innerWidth > 767) {
         const element = document.getElementById('connection-header');
         element.scrollIntoView?.({ behavior: 'smooth', block: 'end', inline: 'nearest' });
       }
@@ -45,12 +45,14 @@ const Connection = ({ expand, ...props }) => {
     }
   }, [filters.client_id]);
 
+  const close = useCallback(() => expand(false), []);
+
   if (!filters.client_id) {
     return (
       <DrawerPanelContent minSize="200px" {...props}>
         <DrawerHead>
           <DrawerActions>
-            <DrawerCloseButton onClick={() => expand(false)} />
+            <DrawerCloseButton onClick={close} />
           </DrawerActions>
         </DrawerHead>
         <DrawerPanelBody className="pf-u-text-align-center pf-u-color-200">
@@ -90,7 +92,7 @@ const Connection = ({ expand, ...props }) => {
           </FlexItem>
         </Flex>
         <DrawerActions>
-          <DrawerCloseButton onClick={() => expand(false)} />
+          <DrawerCloseButton onClick={close} />
         </DrawerActions>
       </DrawerHead>
       <DrawerPanelBody>

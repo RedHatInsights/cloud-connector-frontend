@@ -179,6 +179,12 @@ describe('<Accounts />', () => {
       { id: '0', title: `Ping request for ${account.data[0]} was sent`, variant: 'info' },
     ]);
 
+    expect(screen.getByText(status.account).closest('.pf-c-drawer')).toHaveClass('pf-m-expanded');
+
+    await user.click(screen.getByLabelText('Close drawer panel'));
+
+    expect(screen.getByText(status.account).closest('.pf-c-drawer')).not.toHaveClass('pf-m-expanded');
+
     api.getListConnection = jest.fn().mockResolvedValue(data);
 
     await user.click(screen.getAllByLabelText('Reset')[0]);
@@ -312,5 +318,57 @@ describe('<Accounts />', () => {
     await user.click(screen.getByText('20 per page'));
 
     expect(api.getListConnection).toHaveBeenLastCalledWith({ limit: 20, offset: 0 });
+  });
+
+  it('search by account on larger screen', async () => {
+    // eslint-disable-next-line no-global-assign
+    innerWidth = 800;
+
+    const user = userEvent.setup();
+
+    updateQuery.default = jest.fn();
+
+    const connections = generateConnections(1, 10);
+
+    const data = {
+      meta: { count: connections.length },
+      data: connections,
+    };
+
+    api.getListConnection = jest.fn().mockResolvedValue(data);
+
+    resetConnectionStore();
+    resetNotificationStore();
+
+    render(
+      <TestWrapper>
+        <Accounts />
+      </TestWrapper>
+    );
+
+    await waitFor(() => expect(() => screen.getByRole('progressbar')).toThrow());
+
+    const account = generateAccount();
+    api.getListByAccountConnection = jest.fn().mockResolvedValue(account);
+
+    await user.type(screen.getByLabelText('Find by account number'), '12345');
+
+    await waitFor(() => expect(screen.getByRole('progressbar')).toBeInTheDocument(), { timeout: '501' });
+
+    await waitFor(() => expect(() => screen.getByRole('progressbar')).toThrow());
+
+    const status = generateStatus();
+
+    api.statusConnection = jest.fn().mockResolvedValue(status);
+
+    const scrollSpy = jest.spyOn(Element.prototype, 'scrollIntoView');
+
+    await user.click(screen.getByText(account.data[0]));
+
+    expect(scrollSpy).toHaveBeenCalled();
+
+    // eslint-disable-next-line no-global-assign
+    innerWidth = 0;
+    scrollSpy.mockReset();
   });
 });

@@ -17,3 +17,5 @@ global.mockApi = () => {
 };
 
 process.env.CONNECTOR_API = 'https://test-api';
+
+Element.prototype.scrollIntoView = () => {};
