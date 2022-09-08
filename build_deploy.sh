@@ -1,35 +1,29 @@
 #!/bin/bash
 
-# To debug run like this:
-# QUAY_REPOSITORY="openshift-unified-hybrid-cloud/web-rca-ui" QUAY_TOKEN=$(cat .quay-pass) QUAY_USER=martin_povolny ./build_deploy.sh
-#
+# --------------------------------------------
+# Export vars for helper scripts to use
+# --------------------------------------------
+# name of app-sre "application" folder this component lives in; needs to match for quay
+export COMPONENT="cloud-connector"
+# IMAGE should match the quay repo set by app.yaml in app-interface
+export IMAGE="quay.io/cloudservices/cloud-connector-frontend"
+export WORKSPACE=${WORKSPACE:-$APP_ROOT} # if running in jenkins, use the build's workspace
+export APP_ROOT=$(pwd)
+export NODE_BUILD_VERSION=15
+COMMON_BUILDER=https://raw.githubusercontent.com/RedHatInsights/insights-frontend-builder-common/master
 
-# exit when any command fails
-set -e
+set -exv
+# source is preferred to | bash -s in this case to avoid a subshell
+source <(curl -sSL $COMMON_BUILDER/src/frontend-build.sh)
+BUILD_RESULTS=$?
 
-REPO="${QUAY_REPOSITORY:-TODO/TODO}"
+# Stubbed out for now
+mkdir -p $WORKSPACE/artifacts
+cat << EOF > $WORKSPACE/artifacts/junit-dummy.xml
+<testsuite tests="1">
+    <testcase classname="dummy" name="dummytest"/>
+</testsuite>
+EOF
 
-# The version should be the short hash from git. This is what the deployent process expects.
-VERSION="$(git log --pretty=format:'%h' -n 1)"
-
-# Build metadata
-echo "{
-  \"app_name\": \"cloud-connector-frontend\",
-  \"src_hash\": \"$VERSION\",
-}" > app.info.json
-
-# Log in to the image registry:
-if [ -z "${QUAY_USER}" ]; then
-  echo "The 'quay.io' push user name hasn't been provided."
-  echo "Make sure to set the 'QUAY_USER' environment variable."
-  exit 1
-fi
-if [ -z "${QUAY_TOKEN}" ]; then
-  echo "The 'quay.io' push token hasn't been provided."
-  echo "Make sure to set the 'QUAY_TOKEN' environment variable."
-  exit 1
-fi
-
-# Build and Push the image:
-podman build -t quay.io/${REPO}:${VERSION} -f ./Dockerfile
-podman push --creds=${QUAY_USER}:${QUAY_TOKEN} quay.io/${REPO}:${VERSION}
+# teardown_docker
+exit $BUILD_RESULTS
