@@ -1,11 +1,18 @@
 :9000 {
     metrics /metrics
-}
+  }
   
 :8000 {
     log
-    handle /* {
-        file_server {
+    try_files {path} /index.html /cloud-connect/index.html
+    # Setup the regex for an app match
+    @app_match {
+        path_regexp /cloud-connect(.*)
+    }
+    handle @app_match {
+        # Substitution for alias from nginx
+        uri strip_prefix /cloud-connect
+        file_server * {
             root /opt/app-root/src/dist 
             browse
         }

@@ -15,7 +15,7 @@ const App = () => {
     <IntlProvider locale="en">
       <React.Fragment>
         <NotificationsPortal />
-        <Router basename="/">
+        <Router basename="/cloud-connect">
           <Page>
             <Routes />
           </Page>
