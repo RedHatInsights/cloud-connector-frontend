@@ -1,0 +1,13 @@
+:9000 {
+    metrics /metrics
+}
+  
+:8000 {
+    log
+    handle /* {
+        file_server {
+            root /opt/app-root/src/dist 
+            browse
+        }
+    }
+}
