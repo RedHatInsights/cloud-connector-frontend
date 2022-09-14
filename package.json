@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
+    "test:ci": "jest --no-cache",
     "start": "webpack serve --mode development --config config/webpack.config.js",
     "build": "webpack --mode production --config config/webpack.config.js",
     "lint": "eslint config src"

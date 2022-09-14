@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: cloud-connector
+objects:
+  - apiVersion: cloud.redhat.com/v1alpha1
+    kind: Frontend
+    metadata:
+      name: cloud-connect
+    spec:
+      envName: ${ENV_NAME}
+      frontend:
+        paths:
+          - /cloud-connect
+      image: ${IMAGE}:${IMAGE_TAG}
+
+parameters:
+  - name: ENV_NAME
+    required: true
+  - name: IMAGE_TAG
+    required: true
+  - name: IMAGE
+    value: quay.io/cloudservices/cloud-connector-frontend

@@ -34,7 +34,7 @@ const Header = ({ isNavOpen, onNavToggle }) => {
           }}
         >
           <React.Fragment>
-            <Brand src="/public/logo.svg" alt="Red Hat logo" className="cloud-connector-logo" />
+            <Brand src="/cloud-connect/public/logo.svg" alt="Red Hat logo" className="cloud-connector-logo" />
             <span className="pf-u-ml-md cloud-connector-logo-text">Cloud Connector</span>
           </React.Fragment>
         </MastheadBrand>
