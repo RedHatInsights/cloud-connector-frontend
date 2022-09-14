@@ -35,19 +35,19 @@ describe('<App />', () => {
     await waitFor(() => expect(() => screen.getByRole('progressbar')).toThrow());
 
     expect(screen.getByText('Accounts page')).toBeInTheDocument();
-    expect(window.location.pathname).toBe('/accounts');
+    expect(window.location.pathname).toBe('/cloud-connect/accounts');
 
     await userEvent.click(screen.getByText('Connections'));
 
     expect(api.getListConnection).toHaveBeenCalled();
 
     expect(screen.getByText('Connections page')).toBeInTheDocument();
-    expect(window.location.pathname).toBe('/connections');
+    expect(window.location.pathname).toBe('/cloud-connect/connections');
 
     await userEvent.click(screen.getByText('Accounts'));
 
     expect(screen.getByText('Accounts page')).toBeInTheDocument();
-    expect(window.location.pathname).toBe('/accounts');
+    expect(window.location.pathname).toBe('/cloud-connect/accounts');
   });
 
   it('open and close nav', async () => {
@@ -81,10 +81,10 @@ describe('<App />', () => {
 
     await userEvent.click(screen.getByText('Connections'));
 
-    expect(window.location.pathname).toBe('/connections');
+    expect(window.location.pathname).toBe('/cloud-connect/connections');
 
     await userEvent.click(screen.getByAltText('Red Hat logo'));
 
-    expect(window.location.pathname).toBe('/accounts');
+    expect(window.location.pathname).toBe('/cloud-connect/accounts');
   });
 });
